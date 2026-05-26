@@ -1,0 +1,6 @@
+2026-05-26 12:50:08,553 - load_data - INFO - Train data loaded with shape: (96000, 4)
+2026-05-26 12:50:08,554 - load_data - INFO - Class index range: 0 to 3 (total classes: 4)
+2026-05-26 12:50:08,920 - load_data - INFO - Vocabulary size: 90817
+2026-05-26 12:50:11,704 - load_data - INFO - Validation data loaded with shape: (24000, 4)
+2026-05-26 12:50:11,705 - load_data - INFO - Class index range: 0 to 3 (total classes: 4)
+2026-05-26 12:50:11,705 - load_data - INFO - Vocabulary size: 90817

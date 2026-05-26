@@ -89,7 +89,7 @@ def train_model(
         val_loss, val_accuracy = val_model(val_data, model, loss_fn, device)
 
         logger.info(
-            f"Epoch: {epoch+1}, Loss: {epoch_loss:.4f}, Accuracy: {epoch_accuracy:.2f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}"
+            f"Epoch: {epoch+1}, Train Loss: {epoch_loss:.4f},  Train Accuracy: {epoch_accuracy:.2f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}"
         )
 
 
@@ -109,11 +109,13 @@ def main():
     logger.warning(f"Using device: {device}")
 
     data = pd.read_csv(TRAIN_DATA_PATH)
+    preprocessed_data, _unused_preprocess_report = preprocess_data(data)
+    train_df, val_df = split_train_val(preprocessed_data, label_col="class_index")
 
-    train_df, val_df = split_train_val(data, label_col="class_index")
-
-    train_data, vocab, max_doc_length = prepare_data(train_df)
-    val_data, _unused_vocab, _unused_max_doc_length = prepare_data(val_df, vocab=vocab)
+    train_data, vocab, max_doc_length = prepare_data(train_df, name="train")
+    val_data, _unused_vocab, _unused_max_doc_length = prepare_data(
+        val_df, vocab=vocab, name="validation"
+    )
 
     model = NewsTopicClassifier(vocab_size=len(vocab)).to(device)
     optimizer = Adam(model.parameters(), lr=0.001)

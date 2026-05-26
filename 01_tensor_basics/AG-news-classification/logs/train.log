@@ -1,1 +1,12 @@
-2026-05-26 12:44:08,152 - train - WARNING - Using device: cuda
+2026-05-26 12:50:06,522 - train - WARNING - Using device: cuda
+2026-05-26 12:50:34,092 - train - INFO - Epoch: 1, Train Loss: 0.9137,  Train Accuracy: 0.59, Val Loss: 0.6311, Val Accuracy: 0.77
+2026-05-26 12:50:54,283 - train - INFO - Epoch: 2, Train Loss: 0.5197,  Train Accuracy: 0.82, Val Loss: 0.4659, Val Accuracy: 0.85
+2026-05-26 12:51:13,645 - train - INFO - Epoch: 3, Train Loss: 0.4028,  Train Accuracy: 0.87, Val Loss: 0.4032, Val Accuracy: 0.88
+2026-05-26 12:51:32,751 - train - INFO - Epoch: 4, Train Loss: 0.3475,  Train Accuracy: 0.89, Val Loss: 0.3756, Val Accuracy: 0.88
+2026-05-26 12:51:52,784 - train - INFO - Epoch: 5, Train Loss: 0.3075,  Train Accuracy: 0.91, Val Loss: 0.3475, Val Accuracy: 0.89
+2026-05-26 12:52:15,024 - train - INFO - Epoch: 6, Train Loss: 0.2763,  Train Accuracy: 0.92, Val Loss: 0.3410, Val Accuracy: 0.89
+2026-05-26 12:52:36,519 - train - INFO - Epoch: 7, Train Loss: 0.2526,  Train Accuracy: 0.92, Val Loss: 0.3183, Val Accuracy: 0.90
+2026-05-26 12:52:56,716 - train - INFO - Epoch: 8, Train Loss: 0.2325,  Train Accuracy: 0.93, Val Loss: 0.3125, Val Accuracy: 0.90
+2026-05-26 12:53:18,684 - train - INFO - Epoch: 9, Train Loss: 0.2153,  Train Accuracy: 0.93, Val Loss: 0.3109, Val Accuracy: 0.90
+2026-05-26 12:53:38,804 - train - INFO - Epoch: 10, Train Loss: 0.1997,  Train Accuracy: 0.94, Val Loss: 0.3090, Val Accuracy: 0.90
+2026-05-26 12:53:38,911 - train - INFO - Model saved to D:\deep-learning-NLP\01_tensor_basics\AG-news-classification\models\news_topic_classifier.pt

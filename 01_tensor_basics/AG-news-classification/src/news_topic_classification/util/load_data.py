@@ -71,11 +71,14 @@ def create_dataloader(x: torch.Tensor, y: torch.Tensor, batch_size: int):
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
 
-def prepare_data(df: pd.DataFrame) -> tuple[DataLoader, set[str], int]:
+def prepare_data(
+    df: pd.DataFrame, vocab: set[str] = None, name: str = "data"
+) -> tuple[DataLoader, set[str], int]:
 
-    logger.info(f"Training data loaded with shape: {df.shape}")
+    logger.info(f"{name.capitalize()} data loaded with shape: {df.shape}")
 
-    preprocessed_train_df, _unused_preprocess_report = preprocess_data(df)
+    # preprocessed_train_df, _unused_preprocess_report = preprocess_data(df)
+    preprocessed_train_df = df
     min_class_index = int(preprocessed_train_df["class_index"].min())
     max_class_index = int(preprocessed_train_df["class_index"].max())
 
@@ -87,9 +90,10 @@ def prepare_data(df: pd.DataFrame) -> tuple[DataLoader, set[str], int]:
         f"Class index range: {min_class_index} to {max_class_index} (total classes: {NUM_CLASSES})"
     )
 
-    vocab = build_vocab(
-        preprocessed_train_df, text_col="text", max_vocab_size=MAX_VOCAB_SIZE
-    )
+    if vocab is None:
+        vocab = build_vocab(
+            preprocessed_train_df, text_col="text", max_vocab_size=MAX_VOCAB_SIZE
+        )
     logger.info(f"Vocabulary size: {len(vocab)}")
 
     tokenized_docs = tokenize_docs(preprocessed_train_df, text_col="text")
