@@ -14,12 +14,48 @@ from news_topic_classification.config import (
 from news_topic_classification.util.load_data import prepare_data
 from news_topic_classification.model import NewsTopicClassifier
 from news_topic_classification.util.logger import setup_logger
+from news_topic_classification.util.train_val_split import split_train_val
+from news_topic_classification.util.preprocessing import preprocess_data
 
 logger = setup_logger(LOGS_DIR / Path(__file__).stem, mode="w")
 
 
+def val_model(data: DataLoader, model, loss_fn, device: torch.device):
+    model.eval()
+
+    val_loss = 0.0
+    val_correct = 0
+    val_samples = 0
+
+    with torch.no_grad():
+
+        for x, y in data:
+
+            x = x.to(device)
+            y = y.to(device)
+
+            pred = model(x)
+
+            loss = loss_fn(pred, y)
+
+            predicted_classes = torch.argmax(pred, dim=1)
+
+            val_correct += (predicted_classes == y).sum().item()
+
+            val_samples += y.size(0)
+
+            val_loss += loss.item() * y.size(0)
+
+    val_loss /= val_samples
+
+    val_accuracy = val_correct / val_samples
+
+    return val_loss, val_accuracy
+
+
 def train_model(
-    data: DataLoader,
+    train_data: DataLoader,
+    val_data: DataLoader,
     model,
     optimizer,
     loss_fn,
@@ -32,7 +68,7 @@ def train_model(
         epoch_correct = 0
         epoch_samples = 0
 
-        for x, y in data:
+        for x, y in train_data:
             x = x.to(device)
             y = y.to(device)
 
@@ -49,8 +85,11 @@ def train_model(
 
         epoch_loss /= epoch_samples
         epoch_accuracy = epoch_correct / epoch_samples
+
+        val_loss, val_accuracy = val_model(val_data, model, loss_fn, device)
+
         logger.info(
-            f"Epoch: {epoch+1}, Loss: {epoch_loss:.4f}, Accuracy: {epoch_accuracy:.2f}"
+            f"Epoch: {epoch+1}, Loss: {epoch_loss:.4f}, Accuracy: {epoch_accuracy:.2f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}"
         )
 
 
@@ -69,19 +108,25 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.warning(f"Using device: {device}")
 
-    train_df = pd.read_csv(TRAIN_DATA_PATH)
+    data = pd.read_csv(TRAIN_DATA_PATH)
+
+    train_df, val_df = split_train_val(data, label_col="class_index")
+
     train_data, vocab, max_doc_length = prepare_data(train_df)
+    val_data, _unused_vocab, _unused_max_doc_length = prepare_data(val_df, vocab=vocab)
+
     model = NewsTopicClassifier(vocab_size=len(vocab)).to(device)
     optimizer = Adam(model.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
     train_model(
-        data=train_data,
+        train_data=train_data,
+        val_data=val_data,
         model=model,
         optimizer=optimizer,
         loss_fn=loss_fn,
         device=device,
-        epochs=5,
+        epochs=10,
     )
     save_model(MODEL_SAVE_PATH, model, optimizer, vocab, max_doc_length)
 
