@@ -11,12 +11,15 @@ class NewsTopicClassifier(nn.Module):
         self.layer1 = nn.Linear(in_features=5, out_features=8)
         self.layer2 = nn.Linear(in_features=8, out_features=6)
         self.layer3 = nn.Linear(in_features=6, out_features=num_classes)
+        self.dropout = nn.Dropout(p=0.3)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.embedding(x)
         x = x.mean(dim=1)
         x = torch.relu(self.layer1(x))
+        x = self.dropout(x)
         x = torch.relu(self.layer2(x))
+        x = self.dropout(x)
         x = self.layer3(x)
 
         return x

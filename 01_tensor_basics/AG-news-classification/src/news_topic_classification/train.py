@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim import Adam
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from news_topic_classification.config import (
     DEFAULT_NUM_EPOCH,
@@ -58,6 +59,7 @@ def train_model(
     val_data: DataLoader,
     model,
     optimizer,
+    scheduler,
     loss_fn,
     device: torch.device,
     epochs: int = DEFAULT_NUM_EPOCH,
@@ -87,9 +89,12 @@ def train_model(
         epoch_accuracy = epoch_correct / epoch_samples
 
         val_loss, val_accuracy = val_model(val_data, model, loss_fn, device)
+        scheduler.step(val_loss)
+
+        current_lr = optimizer.param_groups[0]["lr"]
 
         logger.info(
-            f"Epoch: {epoch+1}, Train Loss: {epoch_loss:.4f},  Train Accuracy: {epoch_accuracy:.2f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}"
+            f"LR: {current_lr:.6f}\nEpoch: {epoch+1}, Train Loss: {epoch_loss:.4f},  Train Accuracy: {epoch_accuracy:.2f}, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}"
         )
 
 
@@ -119,6 +124,7 @@ def main():
 
     model = NewsTopicClassifier(vocab_size=len(vocab)).to(device)
     optimizer = Adam(model.parameters(), lr=0.001)
+    scheduler = ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=2)
     loss_fn = nn.CrossEntropyLoss()
 
     train_model(
@@ -126,6 +132,7 @@ def main():
         val_data=val_data,
         model=model,
         optimizer=optimizer,
+        scheduler=scheduler,
         loss_fn=loss_fn,
         device=device,
         epochs=10,
