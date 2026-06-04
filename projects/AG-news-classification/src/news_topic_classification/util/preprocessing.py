@@ -2,7 +2,7 @@ import pandas as pd
 import re
 from pathlib import Path
 
-from news_topic_classification.config import TRAIN_DATA_PATH, TEST_DATA_PATH, LOGS_DIR
+from news_topic_classification.config import LOGS_DIR
 from news_topic_classification.util.logger import setup_logger
 
 logger = setup_logger(LOGS_DIR / Path(__file__).stem, mode="w")
